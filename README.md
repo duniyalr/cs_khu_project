@@ -1,2 +1,2 @@
-# cskhuproject
-this is a class project
+# cs_khu_project
+heloooooo!
