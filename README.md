@@ -1,1 +1,1 @@
-#kharazmi's computer science class project
+# kharazmi
