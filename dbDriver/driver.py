@@ -1,8 +1,14 @@
 import sqlite3
-import whereConditions as wc
+from . import whereConditions as wc
 import functools
+import os
+from pathlib import Path
 
-PATH_TO_DATABASE_FILE = "./db_files/db"
+IS_DATABASE_CREATED = False
+DB_VERSION = "001"
+PATH_TO_DATABASE_FILE = Path(os.getcwd() + "/dbDriver/db_files/db" + DB_VERSION)
+
+if os.path.isfile(PATH_TO_DATABASE_FILE) : IS_DATABASE_CREATED = True
 
 try:
     con = sqlite3.connect(PATH_TO_DATABASE_FILE)
@@ -14,37 +20,19 @@ except Exception as e:
 cur = con.cursor()
 print('database connected')
 
-# checking the tables
-table_names = ['users']
+def createDatabase():
+    f = open(Path(os.getcwd() + "/dbDriver/sql/schema.sql"), 'r')
+    sql = f.read()
+    con.executescript(sql)
 
-# tables that are not exists should recreate
-tables_to_make = []
-for table_name in table_names:
-    cur.execute(f'''
-        SELECT name FROM sqlite_master WHERE type='table' AND name='{table_name}'
-    ''')
-    res = cur.fetchall()
-    if not res:
-        tables_to_make.append(table_name)
+def insertExampleRecords():
+    f = open(Path(os.getcwd() + "/dbDriver/sql/exampleRecords.sql"), 'r')
+    sql = f.read()
+    con.executescript(sql)
 
-# creating tables
-tables_sql = {
-    "users" : 
-        [
-            '''
-                CREATE TABLE users (
-                    username text unique,
-                    password text
-                );
-            ''',
-            '''
-                CREATE INDEX usernameI ON users (username);
-            '''
-        ]
-}
-for table_name in tables_to_make:
-    for stm in tables_sql[table_name]:
-        cur.execute(stm)
+if not IS_DATABASE_CREATED:
+    createDatabase()
+    insertExampleRecords()
 
 def columnNamesToString(columns, insertParanthesis = True):
     if not columns: return '*'
