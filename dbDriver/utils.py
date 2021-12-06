@@ -1,3 +1,4 @@
+from . import whereConditions as wc
 def columnNamesToString(columns, insertParanthesis = True):
     if not columns: return '*'
 
