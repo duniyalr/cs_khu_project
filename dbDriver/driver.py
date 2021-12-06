@@ -1,9 +1,17 @@
+"""
+    this module provides the basic functions for working with the database
+"""
+
 import sqlite3
 from . import whereConditions as wc
 import functools
 import os
+from .utils import *
 from pathlib import Path
 
+"""
+    checking the database file. if there is no db file it will create one.
+"""
 IS_DATABASE_CREATED = False
 DB_VERSION = "001"
 PATH_TO_DATABASE_FILE = Path(os.getcwd() + "/dbDriver/db_files/db" + DB_VERSION)
@@ -34,43 +42,23 @@ if not IS_DATABASE_CREATED:
     createDatabase()
     insertExampleRecords()
 
-def columnNamesToString(columns, insertParanthesis = True):
-    if not columns: return '*'
 
-    if insertParanthesis:
-        return '('+','.join(columns)+')'
-    return ','.join(columns)
-
-def valuesToString(values):
-    values = list(map(wc.stringer, values))
-    
-    return '(' + ','.join(values) + ')'
-
-# this function turns a where dict to the string
-def whereToString(where, joiner = 'AND'):
-    if not where: return '1=1'
-    res = ''
-    if type(where) is list:
-        res += ' AND '.join([str(condition) for condition in where])
-    if type(where) is dict:
-        for _joiner, _conditions in where.items():
-            res += f'({whereToString(_conditions, _joiner)}) '
-    return res
-
-def toSetExpression(columns, values):
-    columns_res = []
-    for i in range(len(columns)):
-        print(i, 'i is here')
-        columns_res.append(f'{columns[i]}={wc.stringer(values[i])}')
-    
-    return ', '.join(columns_res)
-# primary functions for creating driver api
-# table_name(str), columns(list), values(list) -> if success 1 else 0
+"""
+    insert function is the primary function for adding records to database.
+    inputs:
+        table_name(str) -> name of table that you want to insert to it;
+        doc(dict) -> the data that you want to insert to database.
+            be careful every key should be column name;
+    return:
+        returns True if adding was and raise an error if there was a problem.
+"""
 def insert(
     table_name,
-    columns,
-    values
+    doc
 ):
+    columns = list(doc.keys())
+    values = list(doc.values())
+
     if (type(table_name) is not str):
         raise TypeError('table_name should be string')
     if (type(columns) is not list):
@@ -86,7 +74,18 @@ def insert(
     cur.execute(SQL)
     con.commit()
 
-# table_name(str), columns(list), where(dict?) -> (list)
+"""
+    select function is primary function for reading from the database.
+    inputs:
+        table_name(str) -> the table name that you want to read from;
+        columns(list) -> which columns of the table you want to read. put an empty list
+            if you want return all the columns.
+        where(dict) -> this is a where dictionary that indicates which records should be 
+            select. read more about where dictionary in the doc.
+    return:
+        returns a list that contains the records that match the where dictionary conditions.
+        if not found any thing it returns a empty list.
+"""
 def select(
     table_name,
     columns,
@@ -110,6 +109,16 @@ def select(
 
     return res
 
+"""
+    this is primary function function for deleting records from database.
+    inputs:
+        table_name(str) -> the table name that you want delete records from it;
+        where(dict) -> the where dictionary that indicates which records should delete.
+        read more about where dictionary in docs.
+    
+    return:
+        returns True if action was successfull and raise an error if there was a problem.
+"""
 def delete(
     table_name,
     where
@@ -126,12 +135,25 @@ def delete(
     cur.execute(SQL)
     con.commit()
 
+"""
+    the primary function for updating records in database.
+    inputs:
+        table_name(str) -> the table name that you want update records
+        doc(dict) -> indicates the new values for updating the values. the keys in this
+            dictionary indicates the column name and value indicates the new value for record.
+        where(dict) -> its a where dictionary that indicates which records should be updated.
+            read more about where dict in docs.
+    return:
+        returns true if updating was successfull and raises an error if there was an problem.
+"""
+
 def update(
     table_name,
-    columns,
-    values,
+    doc,
     where
 ):
+    columns = doc.keys()
+    values = doc.values()
     if (type(table_name) is not str):
         raise TypeError('table_name should be string')
     if (type(columns) is not list):
@@ -145,11 +167,5 @@ def update(
     PART2 = f'SET {toSetExpression(columns, values)} '
     PART3 = f'WHERE {whereToString(where)}'
     SQL = PART1 + PART2 + PART3
-    print(SQL)
     cur.execute(SQL)
     con.commit()
-
-# delete('users', [wc.equal('username', 'duniyal')])
-# insert('users', ['username', 'password'], ['fbdsafsdgs', '1gfdsgsd234'])
-# update('users', ['username'], ['omidjadidffdsafdaf'],[wc.equal('username', 'omidjadidfg')])
-# print(select('users',[], []))
