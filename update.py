@@ -2,12 +2,17 @@
     this module uses for updating the project files from github without using git.
 """
 
-import requests
+from os import walk,mkdir,unlink,system
+try:
+    import requests
+except:
+    system('python -m pip install requests')
+    import requests
+
 import zipfile
 import random
 import shutil
 import string
-from os import walk,mkdir,unlink
 from os.path import join,exists
 
 PROJECT_NAME = 'cs_khu_project-master'
