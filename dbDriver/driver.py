@@ -14,6 +14,8 @@ from pathlib import Path
 """
 IS_DATABASE_CREATED = False
 DB_VERSION = "001"
+
+if not os.path.exists(os.getcwd() + '/dbDriver/db_files') : os.mkdir(os.getcwd() + '/dbDriver/db_files')
 PATH_TO_DATABASE_FILE = Path(os.getcwd() + "/dbDriver/db_files/db" + DB_VERSION)
 
 if os.path.isfile(PATH_TO_DATABASE_FILE) : IS_DATABASE_CREATED = True
