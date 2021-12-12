@@ -75,6 +75,7 @@ def insert(
     
     cur.execute(SQL)
     con.commit()
+    return True
 
 """
     select function is primary function for reading from the database.
