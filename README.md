@@ -22,3 +22,7 @@ open your terminal here and type:
 at this point server runs.
 
 you can check that! open your browser and goto *localhost:5000* you should see home page.
+
+## updating the project
+
+if you want to update project in your local without using git. just run `python update.py` this command downloads the latest project and replaces the new files with old one.
