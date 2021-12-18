@@ -1,4 +1,5 @@
 import re
+import jdatetime
 
 '''
     this function checks email address format
@@ -46,3 +47,30 @@ def checkStrongPassword(password):
         return True
     else :
         return False
+
+'''
+    by alireza Qobadi
+    this function checks username format 
+'''
+def checkUsername(uname):
+    if(re.match('^[a-zA-Z0-9_]{6,16}$', uname)):
+        return True
+    else:
+        return False
+
+'''
+    this function checks birthday format.
+    this function doesn't recognize the leap year.
+    birthday should be in jalali calender format.
+'''
+def checkBirthday(year, month, day):
+    try:
+        birthday = jdatetime.date(year, month, day)
+    except:
+        return False
+    now = jdatetime.date.today()
+    MIN_AGE = 16 * 365 - 5
+    MAX_AGE = 80 * 365 + 21
+    age = (now - birthday).days
+    if MIN_AGE <= age <= MAX_AGE: return True
+    return False
