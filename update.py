@@ -6,12 +6,9 @@ from os import walk,mkdir,unlink,system
 
 need_modules = ['flask', 'jdatetime','requests']
 for module in need_modules:
-    try:
-        import requests
-    except:
-        system('python -m pip install ' + module)
-        import requests
+    system('python -m pip install ' + module)
 
+import requests
 import zipfile
 import random
 import shutil
