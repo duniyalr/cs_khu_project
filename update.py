@@ -3,11 +3,14 @@
 """
 
 from os import walk,mkdir,unlink,system
-try:
-    import requests
-except:
-    system('python -m pip install requests')
-    import requests
+
+need_modules = ['flask', 'jdatetime','requests']
+for module in need_modules:
+    try:
+        import requests
+    except:
+        system('python -m pip install ' + module)
+        import requests
 
 import zipfile
 import random
